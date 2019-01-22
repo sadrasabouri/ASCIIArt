@@ -18,9 +18,11 @@ int main(){
   /*--- Inputing image ---*/
   FILE *image_pointer;
   Pixel* Image;
-  char tmp[10];
+  char tmp[20];
+  printf("Enter direction of your .ppm file : ");
+  scanf("%s", tmp);
   int height, width, deep;
-  image_pointer = fopen("input/test2.ppm", "rb");
+  image_pointer = fopen(tmp, "rb");
   if(image_pointer != NULL){
     fscanf(image_pointer, "%s", tmp);
 	  fscanf(image_pointer, "%d %d", &width, &height);
@@ -49,7 +51,7 @@ int main(){
 	fprintf(output_pointer, "\n");
   }
   fclose(output_pointer);
-  
+  printf("Your ASCIIArt is now ready in ./ASCIIArt.txt");
   free(ASCIIImage);
   free(Image);
   return 0;
