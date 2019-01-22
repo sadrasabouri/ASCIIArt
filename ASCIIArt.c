@@ -40,7 +40,10 @@ int main(){
 	  }
 	fclose(image_pointer);
   }
-  else exit(0);
+  else{
+	printf("Unable to open file!");
+    exit(0);
+  }
   unsigned char* ASCIIImage = (unsigned char*) malloc(width * height * sizeof(unsigned char));
   ToAscii(Image, ASCIIImage, deep, height, width);
   FILE *output_pointer;
