@@ -58,7 +58,7 @@ int main(){
   ToAscii(Image, ASCIIImage, deep, height, width);
   
   FILE *output_pointer;
-  output_pointer = fopen("ASCIIArt.txt", "w");
+  output_pointer = fopen("./ASCIIArts/ASCIIArt.txt", "w");
   
   //Writing characters in ASCIIArt.txt file.
   for(int i = 0; i < height; ++i){
@@ -68,7 +68,7 @@ int main(){
   }
   fclose(output_pointer);
   
-  printf("Your ASCIIArt is now ready in ./ASCIIArt.txt");
+  printf("Your ASCIIArt is now ready in ./ASCIIArts/ASCIIArt.txt");
   free(ASCIIImage);
   free(Image);
   return 0;
