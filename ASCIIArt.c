@@ -2,6 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_FILE_NAME_SIZE 20
+#define MAX_DIR_SIZE 50
+
 /*-- a struct for defining each pixel of picture --*/
 typedef struct pixel{
   unsigned char red;
@@ -9,6 +12,7 @@ typedef struct pixel{
   unsigned char blue;
 } Pixel;
 
+void GetFileName(const char*, char*);
 float pixel_med(Pixel);
 void ToAscii(Pixel*, unsigned char*, int, int, int);
 void MaxMin(Pixel*, int, int, int*, int*);
@@ -21,16 +25,18 @@ int main(){
   Pixel* Image;
   
   /*--- Inputing image ---*/
-  char tmp[20];
+  char dir[MAX_DIR_SIZE], File_Name[MAX_FILE_NAME_SIZE];
   printf("Enter direction of your .ppm file : ");
-  scanf("%s", tmp);
-  image_pointer = fopen(tmp, "rb");
+  scanf("%s", dir);
+  image_pointer = fopen(dir, "rb");
+  
+  GetFileName(dir, File_Name);
   
   int height, width, deep;
   if (image_pointer != NULL){
 	
 	//First header of file that can be P1 to P6.
-	fscanf(image_pointer, "%s", tmp);
+	fscanf(image_pointer, "%s", dir);
 	//Second headers of file that is width and height of picture.
 	fscanf(image_pointer, "%d %d", &width, &height);
 	//Last header of file that is depth of pixels.
@@ -58,7 +64,7 @@ int main(){
   ToAscii(Image, ASCIIImage, deep, height, width);
   
   FILE *output_pointer;
-  output_pointer = fopen("./ASCIIArts/ASCIIArt.txt", "w");
+  output_pointer = fopen(strcat(File_Name, ".txt"), "w");
   
   //Writing characters in ASCIIArt.txt file.
   for(int i = 0; i < height; ++i){
@@ -68,35 +74,47 @@ int main(){
   }
   fclose(output_pointer);
   
-  printf("Your ASCIIArt is now ready in ./ASCIIArts/ASCIIArt.txt");
+  printf("Your ASCIIArt is now ready in ./%s", File_Name);
   free(ASCIIImage);
   free(Image);
   return 0;
 }
 
+//Function which is fetching out file's name from dir.
+void GetFileName(const char* dir, char* filename){
+  int i = strlen(dir) - 1;//Index of last array's box.
+  int j = 0;
+  while (dir[i] != '/' && dir[i] != '\\' && i != 0){
+	filename[j++] = dir[i];  
+    i--;
+  }  
+  filename[j] = 0;
+  strrev(filename);
+}
+
 //Function which returns the median value of RGB of a pixel
 float pixel_med(Pixel p){
-	return (1.0 * p.red + 1.0 * p.green + 1.0 * p.blue) / 3;
+  return (1.0 * p.red + 1.0 * p.green + 1.0 * p.blue) / 3;
 }
 
 //Function that measures brightness of pixels and map them into AsciiBrightness array.
 void ToAscii(Pixel* Image, unsigned char* ASCIIImage, int deep, int h, int w){
-	int Max, Min;
-	MaxMin(Image, h, w, &Max, &Min);
-	for(int i = 0; i < h; ++i)
-		for(int j = 0; j < w; ++j)
-				*(ASCIIImage + i * w + j) =(unsigned char)((strlen(AsciiBrightness) - 1) * (pixel_med(*(Image + i * w + j)) - Min)/(Max - Min));
+  int Max, Min;
+  MaxMin(Image, h, w, &Max, &Min);
+  for(int i = 0; i < h; ++i)
+    for(int j = 0; j < w; ++j)
+	  *(ASCIIImage + i * w + j) = (unsigned char)((strlen(AsciiBrightness) - 1) * (pixel_med(*(Image + i * w + j)) - Min)/(Max - Min));
 }
 
 //Function returning Max and Min brightness value of whole picture.
 void MaxMin(Pixel* Image, int h, int w, int* max, int* min){
-	int Max = 0, Min = 0x100, tmp;
-	for(int i = 0; i < h; ++i)
-		for(int j = 0; j < w; ++j){
-			tmp = pixel_med(*(Image + i * w + j));
-			if(tmp > Max)	Max = tmp;
-			if(tmp < Min)	Min = tmp;
-		}
+  int Max = 0, Min = 0x100, dir;
+  for(int i = 0; i < h; ++i)
+    for(int j = 0; j < w; ++j){
+	  dir = pixel_med(*(Image + i * w + j));
+	  if(dir > Max)	Max = dir;
+	  if(dir < Min)	Min = dir;
+	}
 	*max = Max;
 	*min = Min;
 }
